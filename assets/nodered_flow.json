@@ -1,0 +1,167 @@
+[
+    {
+        "id": "legacy_tab",
+        "type": "tab",
+        "label": "Jetson Classic Gauges",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "mqtt_stats",
+        "type": "mqtt in",
+        "z": "legacy_tab",
+        "name": "MQTT Stats",
+        "topic": "jetson/health/orin_nano",
+        "qos": "2",
+        "datatype": "json",
+        "broker": "mosquitto-broker",
+        "nl": false,
+        "rap": false,
+        "inputs": 0,
+        "x": 120,
+        "y": 120,
+        "wires": [
+            [
+                "gauge_cpu_legacy",
+                "gauge_gpu_legacy",
+                "gauge_ram_legacy"
+            ]
+        ]
+    },
+    {
+        "id": "gauge_cpu_legacy",
+        "type": "ui_gauge",
+        "z": "legacy_tab",
+        "name": "CPU Temp",
+        "group": "ui_group_classic",
+        "order": 1,
+        "width": "4",
+        "height": "4",
+        "gtype": "gage",
+        "title": "CPU TEMP",
+        "label": "°C",
+        "format": "{{msg.payload.hardware.temp_cpu}}",
+        "min": 0,
+        "max": 100,
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "60",
+        "seg2": "80",
+        "diff": false,
+        "className": "",
+        "x": 360,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "gauge_gpu_legacy",
+        "type": "ui_gauge",
+        "z": "legacy_tab",
+        "name": "GPU Temp",
+        "group": "ui_group_classic",
+        "order": 2,
+        "width": "4",
+        "height": "4",
+        "gtype": "gage",
+        "title": "GPU TEMP",
+        "label": "°C",
+        "format": "{{msg.payload.hardware.temp_gpu}}",
+        "min": 0,
+        "max": 100,
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "60",
+        "seg2": "80",
+        "diff": false,
+        "className": "",
+        "x": 360,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "gauge_ram_legacy",
+        "type": "ui_gauge",
+        "z": "legacy_tab",
+        "name": "RAM Util",
+        "group": "ui_group_classic",
+        "order": 3,
+        "width": "7",
+        "height": "5",
+        "gtype": "gage",
+        "title": "RAM USAGE",
+        "label": "%",
+        "format": "{{msg.payload.load.ram_util}}",
+        "min": 0,
+        "max": 100,
+        "colors": [
+            "#0066ff",
+            "#00ccff",
+            "#ff00ff"
+        ],
+        "seg1": "80",
+        "seg2": "95",
+        "diff": false,
+        "className": "",
+        "x": 360,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "mosquitto-broker",
+        "type": "mqtt-broker",
+        "name": "Mosquitto",
+        "broker": "mosquitto",
+        "port": "1883",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": 4,
+        "keepalive": 15,
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "ui_group_classic",
+        "type": "ui_group",
+        "name": "Processor Vitals",
+        "tab": "ui_tab_main",
+        "order": 1,
+        "disp": true,
+        "width": "12",
+        "collapse": false
+    },
+    {
+        "id": "ui_tab_main",
+        "type": "ui_tab",
+        "name": "Jetson Stats",
+        "icon": "dashboard",
+        "order": 1
+    },
+    {
+        "id": "ee57eebef165e683",
+        "type": "global-config",
+        "env": [],
+        "modules": {
+            "node-red-dashboard": "3.6.6"
+        }
+    }
+]

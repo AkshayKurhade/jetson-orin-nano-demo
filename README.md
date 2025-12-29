@@ -37,7 +37,18 @@ sudo reboot
 The `setup.sh` file details steps necessary to recreate the setup
 
 ### 3. Node-RED setup
-TODO
+1) Open the Node-Red server at http://<JETSON_IP>:1880 from any device or
+[NodeRED_Localhost_server](http://localhost:1880) from the host device
+
+2) Click on the hamburger menu(Three Lines)on the far right
+
+3) Open `Manage Pallete` and install the modules `node-red-dashboard` and `node-red-contrib-influxdb`
+
+4) From the hamburger menu click on `Import` and paste the contents of the file located under `assets/nodered_flow.json`
+
+5) Save and Deploy. Your dashboard can now be accessed at  `http://<JETSON_IP>:1880/ui`
+
+TODO- Documentation for MQTT-influxdb pipeline
 
 ### 4. Grafana Setup
 TODO
@@ -47,7 +58,7 @@ TODO
 ### Dashboard Access
 Once the stack is running, you can access the various interfaces via your browser using the Jetson's IP address:
 
-Node-RED Dashboard (Legacy): http://<JETSON_IP>:1880/ui
+Node-RED Dashboard: http://<JETSON_IP>:1880/ui
 
 Grafana Dashboards: http://<JETSON_IP>:3000 (Default: admin/admin)
 
