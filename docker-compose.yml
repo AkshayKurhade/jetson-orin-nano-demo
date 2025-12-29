@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  mosquitto:
+    image: eclipse-mosquitto:latest
+    container_name: mosquitto-broker
+    ports:
+      - "1883:1883"
+    volumes:
+      - ./mosquitto/config:/mosquitto/config
+      - ./mosquitto/data:/mosquitto/data
+      - ./mosquitto/log:/mosquitto/log
+    restart: always
+
+  health-monitor:
+    build: ./monitor
+    container_name: jetson-orin-demo
+    depends_on:
+      - mosquitto
+    volumes:
+      - /run/jtop.sock:/run/jtop.sock      # Hardware access
+      - ./logs:/app/logs                  # Persistent Log storage
+    environment:
+      - MQTT_BROKER=mosquitto
+    restart: always
+
+  nodered:
+    image: nodered/node-red:latest
+    container_name: jetson-dashboard
+    depends_on:
+      - mosquitto
+    ports:
+      - "1880:1880"
+    volumes:
+      - ./node-red-data:/data
+    restart: always
+    
+  influxdb:
+    image: influxdb:1.8
+    container_name: jetson-db
+    restart: always
+    volumes:
+      - ./influxdb-data:/var/lib/influxdb
+    ports:
+      - "8086:8086"
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: jetson-grafana
+    user: "0" # Fixes permission issues on Jetson
+    depends_on:
+      - influxdb
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./grafana-data:/var/lib/grafana
+    restart: always
