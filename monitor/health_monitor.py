@@ -67,7 +67,7 @@ if __name__ == "__main__":
                 # 3. Print to Console (for 'docker logs')
                 print(f"Health Check: CPU {data['hardware']['temp_cpu']}°C | GPU {data['load']['gpu_util']}%")
                 
-                time.sleep(1000)
+                time.sleep(10)
     except Exception as e:
         print(f"System Error: {e}")
     finally:
