@@ -25,12 +25,15 @@ services:
   nodered:
     image: nodered/node-red:latest
     container_name: jetson-dashboard
+    user: "root"
     depends_on:
       - mosquitto
     ports:
       - "1880:1880"
     volumes:
       - ./node-red-data:/data
+      - ./node-red-data:/data
+      - /var/run/docker.sock:/var/run/docker.sock
     restart: always
     
   influxdb:
@@ -53,3 +56,26 @@ services:
     volumes:
       - ./grafana-data:/var/lib/grafana
     restart: always
+  inference:
+    build: ./inference
+    container_name: jetson-inference
+    runtime: nvidia
+    privileged: true
+    user: "root"
+    environment:
+      - DISPLAY=$DISPLAY
+      - XDG_RUNTIME_DIR=/tmp
+      - OPENCV_VIDEOIO_DEBUG=1
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - /dev:/dev
+      - /tmp:/tmp
+    group_add: 
+    - video
+    depends_on:
+      - mosquitto
+    devices:
+      - "/dev/video0:/dev/video0"
+      - "/dev/video1:/dev/video1"
+
+    restart: no
