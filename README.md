@@ -1,6 +1,8 @@
 # Jetson Orin Nano Demo
 This Project intends to showcase use of various technologies and tools on an edge device. There are better ways to do many of the things done in this project, some of the technologies(like Node-RED) may not be at all required but are included for demonstration and my understanding
 
+![Dashboard](assets/dashboard.png)
+
 
 ---
 
