@@ -1,5 +1,7 @@
 # Jetson Orin Nano Demo
 This Project intends to showcase use of various technologies and tools on an edge device. There are better ways to do many of the things done in this project, some of the technologies(like Node-RED) may not be at all required but are included for demonstration and my understanding
+## Live Dashboard
+The live dashboard can be accessed on my website along with more(or less) information at [Jetson Orin Nano Live Dashboard](https://akshaykurhade.com/2025/12/29/nvidia-jetson-orin-nano-dashboard-and-demo-inference-server/)
 
 ![Dashboard](assets/dashboard.png)
 
@@ -50,7 +52,7 @@ The `setup.sh` file details steps necessary to recreate the setup
 
 TODO- Documentation for MQTT-influxdb pipeline
 
-### 4. Grafana Setup
+### 4. Grafana Setup(WIP)
 TODO
 
 
@@ -60,7 +62,7 @@ Once the stack is running, you can access the various interfaces via your browse
 
 Node-RED Dashboard: http://<JETSON_IP>:1880/ui
 
-Grafana Dashboards: http://<JETSON_IP>:3000 (Default: admin/admin)
+Grafana Dashboards: http://<JETSON_IP>:3000 (Default: admin/admin) #Currently WIP
 
 MQTT Explorer: Connect to mqtt://<JETSON_IP>:1883 
 
