@@ -54,6 +54,8 @@ The `setup.sh` file details steps necessary to recreate the setup
 
 5) Save and Deploy. Your dashboard can now be accessed at  `http://<JETSON_IP>:1880/ui`
 
+![NoderedFLow](assets/nodered_flow.png)
+
 TODO- Documentation for MQTT-influxdb pipeline
 
 ### 4. Grafana Setup(WIP)
