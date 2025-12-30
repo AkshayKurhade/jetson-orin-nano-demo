@@ -18,7 +18,11 @@ The live dashboard can be accessed on my website along with more(or less) inform
 | **Node-RED** | Node-RED | Data transformation, UI Gauges, and DB Bridge. |
 | **Database** | InfluxDB  | High-performance time-series data storage. |
 | **Visualization** | Grafana | Dashboard,connects via Nodered Flow to the MQTT server |
+| **External Control** | OpenPLC | External RPi running OpenPLC with a structured text program |
 
+### Containers
+    All the services run in their individual containers as seen below.
+![Containers](assets/containers.png)
 
 ---
 
@@ -35,7 +39,7 @@ sudo pip3 install -U jetson-stats
 # Reboot to initialize the jtop service and permissions
 sudo reboot
 ```
-### 2. Setup
+### 2. System Setup
 The `setup.sh` file details steps necessary to recreate the setup
 
 ### 3. Node-RED setup
@@ -55,6 +59,9 @@ TODO- Documentation for MQTT-influxdb pipeline
 ### 4. Grafana Setup(WIP)
 TODO
 
+### 5. OpenPLC
+Follow the tutorial by Dr. Don Wilcher [Reference Link to the article](https://control.com/technical-articles/turn-a-raspberry-pi-into-a-plc-using-openplc/)
+![PLC](assets/plc_monitor.png)
 
 ## Access
 ### Dashboard Access
@@ -66,6 +73,11 @@ Grafana Dashboards: http://<JETSON_IP>:3000 (Default: admin/admin) #Currently WI
 
 MQTT Explorer: Connect to mqtt://<JETSON_IP>:1883 
 
-## Known Issues
-- Some browsers refuse to connect to the dashboard servers
+## Known Issues/Improvements/Design Choices/What Could have been done better
+
+- Some browsers refuse to connect to the servers, try a different browser/device
 - The Node-Red Dashboard uses a deprecated module `node-red-dashboard`, alternative is `@flowfuse/node-red-dashboard`
+- The PLC section is just verified on software, Raspberry Pi is not the best choice for an end project, however should satisfy for demonstration
+- The Structured Text program for unknown reason refused to compile with comments
+- Attempted to use `@flowfuse/node-red-dashboard`, however the gauges had blank background and needle was just a period
+- Was successfull setting up the Grafana Dashboard but it was overwhelming and would need more time and effort

@@ -16,8 +16,8 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /app
 
-# 2. Use the system's hardware-optimized OpenCV (don't pip install it)
-RUN pip3 install --no-cache-dir paho-mqtt
+
+RUN pip3 install --no-cache-dir paho-mqtt pyModbusTCP
 
 COPY inference_server.py .
 

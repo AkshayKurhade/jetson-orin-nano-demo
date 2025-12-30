@@ -6,7 +6,16 @@ import json
 import time
 import signal
 import sys
+import time
+from pyModbusTCP.client import ModbusClient as ModbusBridge
 
+# --- CONFIGURATION ---
+PLC_IP = "10.2.1.19"  # Raspberry Pi IP
+PLC_PORT = 502        # Standard Modbus Port
+FAIL_COIL = 0         # Corresponds to %MX0.0
+
+#Initialize Modbus Client
+client_modbus = ModbusBridge(host=PLC_IP, port=PLC_PORT, auto_open=True)
 # --- Configuration ---
 BROKER = "mosquitto-broker"
 TOPIC_STATS = "jetson/inference/stats"
@@ -52,7 +61,26 @@ def classify_frame(frame):
     if r_pix > g_pix and r_pix > 10000: return "FAIL"
     return "IDLE"
 
-# --- Main Logic ---
+def trigger_rejection():
+    try:
+        # Check if the attribute exists; if not, try the alternative 'write_coil'
+        if hasattr(client_modbus, 'write_single_coil'):
+            success = client_modbus.write_single_coil(0, True)
+        elif hasattr(client, 'write_coil'):
+            success = client_modbus.write_coil(0, True)
+        else:
+            #print(f"Available methods: {dir(client)}")
+            return
+
+        # if success:
+        #     print("Rejection signal sent to PLC.")
+        # else:
+        #     print("PLC rejected the write request.")
+            
+    except Exception as e:
+        print(f"Modbus communication error: {e}")
+
+
 try:
     client.connect(BROKER, 1883, 60)
     client.loop_start()
@@ -61,22 +89,25 @@ try:
     cap = cv2.VideoCapture(GS_PIPELINE, cv2.CAP_GSTREAMER)
 
     if not cap.isOpened():
-        print("[ERROR] Could not open video stream. Ensure no other apps are using /dev/video0.")
+        print("Could not open video stream. Ensure no other apps are using /dev/video0.")
         sys.exit(1)
 
     print("Inference Server Running. Monitoring for Green/Red objects...")
     while cap.isOpened():
         ret, frame = cap.read()
         if not ret: 
-            print("[ERROR] Failed to grab frame.")
+            print("Failed to grab frame.")
             break
 
         result = classify_frame(frame)
         
         if result != "IDLE":
             if result == "PASS": stats["pass_count"] += 1
-            else: stats["fail_count"] += 1
-            
+            else: 
+                
+                stats["fail_count"] += 1
+                #print("triggering")
+                trigger_rejection()
             # Publish result to MQTT for Node-RED and InfluxDB
             payload = {
                 "status": result,
@@ -86,8 +117,7 @@ try:
             client.publish(TOPIC_STATS, json.dumps(payload))
             print(f"RESULT: {result} | P: {stats['pass_count']} F: {stats['fail_count']}")
 
-        time.sleep(0.5) # Prevent CPU pegging
-
+        time.sleep(0.5) 
 except Exception as e:
     print(f"[FATAL ERROR] {e}")
 finally:
