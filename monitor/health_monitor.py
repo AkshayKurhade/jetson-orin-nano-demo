@@ -26,7 +26,7 @@ def get_stats(jetson):
     cpu_cores = stats.get('CPU', [])
     cpu_avg = sum(cpu_cores) / len(cpu_cores) if cpu_cores else 0
     #temps = stats.get('TEMP', {})
-    
+    # temps are no longer under stats.get
     return {
         "timestamp": time.strftime("%Y-%m-%dT%H:%M:%S"),
         "hardware": {
@@ -58,13 +58,13 @@ if __name__ == "__main__":
                 data = get_stats(jetson)
                 payload = json.dumps(data)
                 
-                # 1. Log to File (Rotating)
+                # Log to File (Rotating)
                 logger.info(payload)
                 
-                # 2. Publish to MQTT
+                #  Publish to MQTT
                 client.publish(MQTT_TOPIC, payload)
                 
-                # 3. Print to Console (for 'docker logs')
+                # Print to Console (for 'docker logs')
                 print(f"Health Check: CPU {data['hardware']['temp_cpu']}°C | GPU {data['load']['gpu_util']}%")
                 
                 time.sleep(10)

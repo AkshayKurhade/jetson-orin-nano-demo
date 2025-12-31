@@ -108,7 +108,7 @@ try:
                 stats["fail_count"] += 1
                 #print("triggering")
                 trigger_rejection()
-            # Publish result to MQTT for Node-RED and InfluxDB
+            # Publish result to MQTT
             payload = {
                 "status": result,
                 "counts": stats,
