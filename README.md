@@ -10,21 +10,44 @@ The live dashboard can be accessed on my website along with more(or less) inform
 
 ##  Overview
 
+# Jetson Orin Nano Demo
+
+This project showcases the use of various technologies and tools on an edge device. It demonstrates direct hardware monitoring, microservices architecture, and real-time computer vision inference.
+
+## Live Dashboard
+The live dashboard is embedded on my website: [Jetson Orin Nano Live Dashboard](https://akshaykurhade.com/2025/12/29/nvidia-jetson-orin-nano-dashboard-and-demo-inference-server/)
+
+![Dashboard](assets/dashboard.png)
+
+---
+
+## Overview
+
 | Component | Technology | Role |
 | :--- | :--- | :--- |
 | **Data Producer** | Python 3.10 + `jtop` | Direct hardware sensor access (CPU/GPU/RAM). |
-| **Local Logger** | Python `csv` module | Use a local rotating logger to have failsafe but still save space |
-| **Messaging** | Mosquitto (MQTT) | Decoupled communication between services. |
-| **Node-RED** | Node-RED | Data transformation, UI Gauges, and DB Bridge. |
-| **Database** | InfluxDB  | High-performance time-series data storage. |
-| **Visualization** | Grafana | Dashboard,connects via Nodered Flow to the MQTT server |
-| **External Control** | OpenPLC | External RPi running OpenPLC with a structured text program |
-
-### Containers
-    All the services run in their individual containers as seen below.
-![Containers](assets/containers.png)
+| **Inference Server** | Roboflow | GPU-accelerated engine optimized for Jetson. |
+| **Inference Client** | Python + `inference-sdk`| Captures frames and publishing messages |
+| **Local Logger** | Python `csv` module | Rotating logger for local failsafe storage. |
+| **Messaging** | Mosquitto (MQTT) | Pub Sub communication between services. |
+| **Node-RED** | Node-RED | Dashboard |
+| **Database** | InfluxDB | High-performance time-series data storage.#NOTINUSE |
+| **Visualization** | Grafana | Hardware monitoring and trend visualization.#NOTINUSE |
+| **External Control** | OpenPLC | External RPi running Structured Text logic. |
 
 ---
+
+## Computer Vision: 
+### Living Room Cat Counter 
+    The Living Room Cat Counter utilizes the Roboflow inference server Docker image optimized for the Jetson 6.2.x platform running the inference server. The model is YoloV8n trained on the COCO dataset
+* **Server**: Uses the official Roboflow Jetson image,
+* **Client**: A lightweight Python script that queries the server. It sends real-time counts to a MQTT which is ingested by a Node-RED server to display it on my website
+
+### QC Dummy Server-
+    The Dummy QC server classifies the good and the bad parts as PASS/FAIL, it currently looks for the red and green colors
+    It uses Gstreamer, probably overkill but for the demonstration of use of the technology
+    It uses the `PyModbusTCP` python library to create a client and write to a PLC (Currently a Raspberry Pi 4b running a emulator)
+    
 
 ## Installation & Setup
 
@@ -39,6 +62,14 @@ sudo pip3 install -U jetson-stats
 # Reboot to initialize the jtop service and permissions
 sudo reboot
 ```
+Create a file named `.env` in your repository to store you API key and other information you would not want to upload to the whole of internet
+```Plaintext
+ROBOFLOW_API_KEY=<Actual API KEY> #Find it under your Roboflow account
+```
+#### Containers
+    All the services run in their individual containers as seen below.
+![Containers](assets/containers.png)
+
 ### 2. System Setup
 The `setup.sh` file details steps necessary to recreate the setup
 
@@ -71,7 +102,8 @@ Once the stack is running, you can access the various interfaces via your browse
 
 Node-RED Dashboard: http://<JETSON_IP>:1880/ui
 
-Grafana Dashboards: http://<JETSON_IP>:3000 (Default: admin/admin) #Currently WIP
+Grafana Dashboards: http://<JETSON_IP>:3000 (Default: admin/admin) 
+> [!WARNING] Currently Not in use due to memory constraints
 
 MQTT Explorer: Connect to mqtt://<JETSON_IP>:1883 
 
@@ -83,3 +115,11 @@ MQTT Explorer: Connect to mqtt://<JETSON_IP>:1883
 - The Structured Text program for unknown reason refused to compile with comments
 - Attempted to use `@flowfuse/node-red-dashboard`, however the gauges had blank background and needle was just a period
 - Was successfull setting up the Grafana Dashboard but it was overwhelming and would need more time and effort
+- Camera Lock: Only one inference server (QC or Cat Counter) can access /dev/video0 at a time.
+- Mobile Layout: Optimized for mobile viewing using a 12-column "stacked" group layout.
+- Memory Management: Prevent OOM crashes
+
+## TODO
+- Documentation - Currently inconsistent
+- Optimization - Heavy containers-look for alternatives, reuse
+- QC inference server- Currently Dummy- replace with an actual QC server(seperate project)

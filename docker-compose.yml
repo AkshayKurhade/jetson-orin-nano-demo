@@ -36,26 +36,26 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     restart: always
     
-  influxdb:
-    image: influxdb:1.8
-    container_name: jetson-db
-    restart: always
-    volumes:
-      - ./influxdb-data:/var/lib/influxdb
-    ports:
-      - "8086:8086"
+  # influxdb:
+  #   image: influxdb:1.8
+  #   container_name: jetson-db
+  #   restart: always
+  #   volumes:
+  #     - ./influxdb-data:/var/lib/influxdb
+  #   ports:
+  #     - "8086:8086"
 
-  grafana:
-    image: grafana/grafana:latest
-    container_name: jetson-grafana
-    user: "0" # Fixes permission issues on Jetson
-    depends_on:
-      - influxdb
-    ports:
-      - "3000:3000"
-    volumes:
-      - ./grafana-data:/var/lib/grafana
-    restart: always
+  # grafana:
+  #   image: grafana/grafana:latest
+  #   container_name: jetson-grafana
+  #   user: "0" # Fixes permission issues on Jetson
+  #   depends_on:
+  #     - influxdb
+  #   ports:
+  #     - "3000:3000"
+  #   volumes:
+  #     - ./grafana-data:/var/lib/grafana
+  #   restart: always
   inference:
     build: ./inference
     container_name: jetson-inference
@@ -79,3 +79,39 @@ services:
       - "/dev/video1:/dev/video1"
 
     restart: no
+  cat-counter:
+    build: ./cat_counter 
+    container_name: jetson-cat-counter
+    restart: no
+    runtime: nvidia              
+    environment:
+      - ROBOFLOW_API_KEY=${ROBOFLOW_API_KEY}
+      - DISPLAY=$DISPLAY
+      - XDG_RUNTIME_DIR=/tmp
+      - OPENCV_VIDEOIO_DEBUG=1
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - /dev:/dev
+      - /tmp:/tmp
+    group_add: 
+    - video
+    devices:
+      - "/dev/video0:/dev/video0"
+      - "/dev/video1:/dev/video1"
+    depends_on:
+      - mosquitto                
+  roboflow-inference:
+    # Use the Jetson-optimized image for high performance
+    image: roboflow/roboflow-inference-server-jetson-6.0.0:latest
+    container_name: roboflow-inference
+    restart: always
+    runtime: nvidia              # Crucial: Gives the container GPU access
+    ports:
+      - "9001:9001"              # Exposes the inference API
+    environment:
+      - ROBOFLOW_API_KEY=${ROBOFLOW_API_KEY}
+      # Optional: Enable TensorRT for max speed (adds startup time)
+      - ONNXRUNTIME_EXECUTION_PROVIDERS=TensorrtExecutionProvider 
+    volumes:
+      - ./inference-cache:/tmp/cache # Caches model weights for offline use
+    privileged: true             # Required for direct hardware access

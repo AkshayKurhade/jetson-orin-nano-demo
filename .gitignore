@@ -211,3 +211,5 @@ __marimo__/
 /grafana-data
 /influxdb-data
 /mosquitto/data
+/.env
+/inference-cache
