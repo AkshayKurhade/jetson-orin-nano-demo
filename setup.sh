@@ -7,8 +7,8 @@ echo "Creating directories..."
 mkdir -p monitor/logs
 mkdir -p mosquitto/config
 mkdir -p node-red-data
-mkdir -p influxdb-data
-mkdir -p grafana-data
+#mkdir -p influxdb-data
+#mkdir -p grafana-data
 
 
 # 2. Fix Permissions for Node-RED (UID 1000)
@@ -48,14 +48,14 @@ echo " Building and launching Docker containers..."
 docker compose up -d --build
 
 # 5. Wait for InfluxDB to settle before creating the DB, without it the setup crashes
-echo "Waiting for InfluxDB to initialize..."
-sleep 15
-docker exec -it jetson-db influx -execute "CREATE DATABASE jetson_stats"
+#echo "Waiting for InfluxDB to initialize..."
+#sleep 15
+#docker exec -it jetson-db influx -execute "CREATE DATABASE jetson_stats"
 
 echo "------------------------------------------------"
 echo "SETUP COMPLETE!"
 echo "Node-RED: http://$(hostname -I | awk '{print $1}'):1880"
-echo "Grafana:  http://$(hostname -I | awk '{print $1}'):3000"
+#echo "Grafana:  http://$(hostname -I | awk '{print $1}'):3000"
 echo "MQTT:     $(hostname -I | awk '{print $1}'):1883"
 echo "------------------------------------------------"
 echo "To enable auto-start on boot, run:"
